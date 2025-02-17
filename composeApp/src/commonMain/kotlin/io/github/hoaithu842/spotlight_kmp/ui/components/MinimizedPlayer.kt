@@ -49,11 +49,6 @@ fun MinimizedPlayer(
     onPlayerClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-//    var showBottomSheet by remember { mutableStateOf(false) }
-//    val sheetState = rememberModalBottomSheetState(
-//        skipPartiallyExpanded = true,
-//    )
-
     var playing by remember { mutableStateOf(isPlaying) }
     Box(
         modifier = modifier
@@ -64,9 +59,9 @@ fun MinimizedPlayer(
             )
             .background(MinimizedPlayerBackground)
             .clickable {
-//                showBottomSheet = true
                 onPlayerClick()
             }
+            .padding(bottom = 2.dp)
     ) {
         Box(
             modifier = Modifier
@@ -131,7 +126,4 @@ fun MinimizedPlayer(
             strokeCap = StrokeCap.Round,
         )
     }
-//    if (showBottomSheet) {
-//
-//    }
 }

@@ -23,4 +23,7 @@ object SpotlightDimens {
     val MinimizedPlayerThumbnailSize = 38.dp
     val MinimizedPlayerThumbnailPaddingStart = 15.dp
     val MinimizedPlayerInfoPaddingStart = 10.dp
+
+    val FullsizePlayerTopAppBarHeight = 48.dp
+    val FullsizePlayerTopAppBarPadding = 12.dp
 }

@@ -39,6 +39,20 @@ import spotlight.composeapp.generated.resources.settings_and_privacy
 import spotlight.composeapp.generated.resources.view_profile
 import spotlight.composeapp.generated.resources.whats_new
 
+enum class CustomDrawerState {
+    Opened,
+    Closed,
+}
+
+fun CustomDrawerState.isOpened(): Boolean {
+    return this.name == "Opened"
+}
+
+fun CustomDrawerState.opposite(): CustomDrawerState {
+    return if (this == CustomDrawerState.Opened) CustomDrawerState.Closed
+    else CustomDrawerState.Opened
+}
+
 @Composable
 fun HomeScreenDrawer(
     modifier: Modifier = Modifier,

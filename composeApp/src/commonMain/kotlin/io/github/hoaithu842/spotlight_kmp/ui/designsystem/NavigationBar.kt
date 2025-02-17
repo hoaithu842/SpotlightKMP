@@ -15,7 +15,6 @@ import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import io.github.hoaithu842.spotlight_kmp.ui.theme.NavigationGray
@@ -31,25 +30,17 @@ fun SpotlightNavigationBar(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
+            .background(MaterialTheme.colorScheme.background),
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(SpotlightDimens.NavigationBarHeight)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.background.copy(alpha = 0.3f),
-                            MaterialTheme.colorScheme.background
-                        )
-                    )
-                )
         )
 
-        // Actual NavigationBar content
         NavigationBar(
             modifier = Modifier.fillMaxWidth(),
-            containerColor = Color.Transparent, // Transparent because we use the Box background
+            containerColor = Color.Transparent,
             content = content,
         )
     }

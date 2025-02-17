@@ -3,11 +3,13 @@ package io.github.hoaithu842.spotlight_kmp.ui.designsystem
 import spotlight.composeapp.generated.resources.Res
 import spotlight.composeapp.generated.resources.add
 import spotlight.composeapp.generated.resources.clock
+import spotlight.composeapp.generated.resources.down
 import spotlight.composeapp.generated.resources.home
 import spotlight.composeapp.generated.resources.home_selected
 import spotlight.composeapp.generated.resources.library
 import spotlight.composeapp.generated.resources.library_selected
 import spotlight.composeapp.generated.resources.lightning
+import spotlight.composeapp.generated.resources.more
 import spotlight.composeapp.generated.resources.pause
 import spotlight.composeapp.generated.resources.play
 import spotlight.composeapp.generated.resources.premium
@@ -29,4 +31,6 @@ object SpotlightIcons {
     val Settings = Res.drawable.settings
     val Play = Res.drawable.play
     val Pause = Res.drawable.pause
+    val Down = Res.drawable.down
+    val More = Res.drawable.more
 }
