@@ -26,4 +26,10 @@ object SpotlightDimens {
 
     val FullsizePlayerTopAppBarHeight = 48.dp
     val FullsizePlayerTopAppBarPadding = 12.dp
+    val FullsizePlayerThumbnailSize = 380.dp
+    val FullsizePlayerMainContentPadding = 67.dp
+    val FullsizePlayerMainContentHorizontalPadding = 22.dp
+    val PlayerControllerSmallIconSize = 22.dp
+    val PlayerControllerMediumIconSize = 36.dp
+    val PlayerControllerLargeIconSize = 67.dp
 }

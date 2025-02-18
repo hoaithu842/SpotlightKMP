@@ -14,8 +14,16 @@ object SpotlightTextStyle {
         fontSize = 14.sp,
         fontWeight = FontWeight.W400,
     )
+    val Text16W400 = TextStyle(
+        fontSize = 16.sp,
+        fontWeight = FontWeight.W400,
+    )
     val Text18W700 = TextStyle(
         fontSize = 18.sp,
         fontWeight = FontWeight.W700,
+    )
+    val Text22W400 = TextStyle(
+        fontSize = 22.sp,
+        fontWeight = FontWeight.W400,
     )
 }

@@ -1,7 +1,9 @@
 package io.github.hoaithu842.spotlight_kmp.ui.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,7 +19,9 @@ fun HomeScreen(
     onAvatarClick: () -> Unit,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
     ) {
         var currentTab by remember { mutableStateOf(HomeScreenTab.All) }
 
