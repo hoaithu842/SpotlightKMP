@@ -1,4 +1,4 @@
-package io.github.hoaithu842.spotlight_kmp.ui.components
+package io.github.hoaithu842.spotlight_kmp.presentation.designsystem
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,9 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightDimens
-import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightIcons
-import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightTextStyle
 import io.github.hoaithu842.spotlight_kmp.ui.theme.NavigationGray
 import io.github.hoaithu842.spotlight_kmp.ui.theme.TopAppBarGray
 import org.jetbrains.compose.resources.DrawableResource

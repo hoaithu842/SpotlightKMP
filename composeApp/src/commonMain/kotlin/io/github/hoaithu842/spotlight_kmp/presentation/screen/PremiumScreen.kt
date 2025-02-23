@@ -1,4 +1,4 @@
-package io.github.hoaithu842.spotlight_kmp.ui.screen
+package io.github.hoaithu842.spotlight_kmp.presentation.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -10,14 +10,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun SearchScreen() {
+fun PremiumScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(MaterialTheme.colorScheme.surface),
     ) {
         Text(
-            text = "SearchScreen",
+            text = "PremiumScreen",
             modifier = Modifier.align(Alignment.Center),
         )
     }

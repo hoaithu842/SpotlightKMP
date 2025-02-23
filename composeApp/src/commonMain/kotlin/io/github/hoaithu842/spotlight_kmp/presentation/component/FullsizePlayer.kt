@@ -1,4 +1,4 @@
-package io.github.hoaithu842.spotlight_kmp.ui.components
+package io.github.hoaithu842.spotlight_kmp.presentation.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
@@ -35,12 +35,13 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import io.github.hoaithu842.spotlight_kmp.extensions.noRippleClickable
-import io.github.hoaithu842.spotlight_kmp.ui.designsystem.FullsizePlayerTopAppBar
-import io.github.hoaithu842.spotlight_kmp.ui.designsystem.PlayerControllerTopAppBar
-import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightDimens
-import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightIcons
-import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightTextStyle
+import io.github.hoaithu842.spotlight_kmp.domain.model.Song
+import io.github.hoaithu842.spotlight_kmp.extension.noRippleClickable
+import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.FullsizePlayerTopAppBar
+import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.PlayerControllerTopAppBar
+import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.SpotlightDimens
+import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.SpotlightIcons
+import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.SpotlightTextStyle
 import io.github.hoaithu842.spotlight_kmp.ui.theme.MinimizedPlayerBackground
 import io.github.hoaithu842.spotlight_kmp.ui.theme.NavigationGray
 import io.github.hoaithu842.spotlight_kmp.ui.theme.ProgressIndicatorColor
@@ -133,14 +134,16 @@ fun FullsizePlayer(
             exit = fadeOut(),
         ) {
             PlayerControllerTopAppBar(
-                songName = songName,
-                artists = artists,
                 isPlaying = true,
+                song = Song(),
+                currentPosition = 0,
+                duration = 20000,
                 onPlayerClick = {
                     scope.launch {
                         lazyListState.animateScrollToItem(0)
                     }
-                }
+                },
+                onMainFunctionClick = {},
             )
         }
     }

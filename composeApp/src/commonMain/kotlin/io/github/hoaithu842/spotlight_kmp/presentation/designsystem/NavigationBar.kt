@@ -1,4 +1,4 @@
-package io.github.hoaithu842.spotlight_kmp.ui.designsystem
+package io.github.hoaithu842.spotlight_kmp.presentation.designsystem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -30,7 +30,7 @@ fun SpotlightNavigationBar(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .background(MaterialTheme.colorScheme.background),
+            .background(MaterialTheme.colorScheme.surface),
     ) {
         Box(
             modifier = Modifier

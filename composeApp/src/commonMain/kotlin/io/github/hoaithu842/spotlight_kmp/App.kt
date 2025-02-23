@@ -19,6 +19,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
@@ -41,6 +42,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import coil3.annotation.ExperimentalCoilApi
 import io.github.hoaithu842.spotlight_kmp.manager.NetworkListener
 import io.github.hoaithu842.spotlight_kmp.manager.NetworkStatus
 import io.github.hoaithu842.spotlight_kmp.navigation.SpotlightNavHost
@@ -49,12 +51,12 @@ import io.github.hoaithu842.spotlight_kmp.navigation.navigateToHomeScreen
 import io.github.hoaithu842.spotlight_kmp.navigation.navigateToLibraryScreen
 import io.github.hoaithu842.spotlight_kmp.navigation.navigateToPremiumScreen
 import io.github.hoaithu842.spotlight_kmp.navigation.navigateToSearchScreen
-import io.github.hoaithu842.spotlight_kmp.ui.components.FullsizePlayer
-import io.github.hoaithu842.spotlight_kmp.ui.components.HomeScreenDrawer
-import io.github.hoaithu842.spotlight_kmp.ui.components.MinimizedPlayer
-import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightDimens
-import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightNavigationBar
-import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightNavigationBarItem
+import io.github.hoaithu842.spotlight_kmp.presentation.component.FullsizePlayer
+import io.github.hoaithu842.spotlight_kmp.presentation.component.MinimizedPlayer
+import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.HomeScreenDrawer
+import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.SpotlightDimens
+import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.SpotlightNavigationBar
+import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.SpotlightNavigationBarItem
 import io.github.hoaithu842.spotlight_kmp.ui.theme.BlurGray
 import io.github.hoaithu842.spotlight_kmp.ui.theme.SpotlightTheme
 import kotlinx.coroutines.delay
@@ -94,7 +96,7 @@ fun navigateToTopLevelDestination(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalCoilApi::class)
 @Composable
 @Preview
 fun App(
@@ -136,7 +138,7 @@ fun App(
                     end = 0.dp
                 ),
                 userScrollEnabled = currentScrollState,
-                modifier = Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.background),
+                modifier = Modifier.background(MaterialTheme.colorScheme.background),
             ) { page ->
                 if (page == 0) {
                     HomeScreenDrawer()
@@ -233,9 +235,7 @@ fun App(
                                     },
                                     snackbarHost = { SnackbarHost(snackbarHostState) },
                                     sheetContainerColor = Color.Transparent,
-                                    modifier = Modifier
-                                        .padding(innerPadding)
-                                        .fillMaxSize(),
+                                    modifier = Modifier.fillMaxSize(),
                                 ) {
                                     SpotlightNavHost(
                                         navHostController = navController,

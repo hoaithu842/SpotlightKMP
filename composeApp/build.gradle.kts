@@ -50,6 +50,14 @@ kotlin {
 
             implementation(libs.navigation.compose) // Navigation
             implementation(libs.kotlinx.serialization.json) // Serializable
+
+            // Coil
+            implementation(libs.koin.core)
+            implementation(libs.coil.compose.core)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.mp)
+            implementation(libs.coil.network.ktor)
+
             api(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.composeVM)

@@ -1,7 +1,8 @@
-package io.github.hoaithu842.spotlight_kmp.ui.designsystem
+package io.github.hoaithu842.spotlight_kmp.presentation.designsystem
 
 import spotlight.composeapp.generated.resources.Res
 import spotlight.composeapp.generated.resources.add
+import spotlight.composeapp.generated.resources.add_2
 import spotlight.composeapp.generated.resources.clock
 import spotlight.composeapp.generated.resources.down
 import spotlight.composeapp.generated.resources.heart
@@ -45,4 +46,5 @@ object SpotlightIcons {
     val Timer = Res.drawable.timer
     val PlayNext = Res.drawable.play_next
     val PlayPrevious = Res.drawable.play_previous
+    val Add_2 = Res.drawable.add_2
 }
