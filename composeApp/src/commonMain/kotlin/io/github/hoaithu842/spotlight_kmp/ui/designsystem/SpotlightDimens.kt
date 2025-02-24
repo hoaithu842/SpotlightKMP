@@ -1,4 +1,4 @@
-package io.github.hoaithu842.spotlight_kmp.presentation.designsystem
+package io.github.hoaithu842.spotlight_kmp.ui.designsystem
 
 import androidx.compose.ui.unit.dp
 
@@ -40,4 +40,20 @@ object SpotlightDimens {
 
     val RecommendationSectionHeight = 260.dp
     val RecommendationSectionThumbnailSize = 152.dp
+
+    val BrowseSectionHeight = 100.dp
+    val BrowseSectionThumbnailSize = 80.dp
+    val BrowseSectionThumbnailXOffset = 25.dp
+    val BrowseSectionThumbnailYOffset = (-10).dp
+
+    val LibraryTextFieldHeight = 30.dp
+    val LibrarySearchButtonWidth = 50.dp
+    val LibrarySearchIconSize = 18.dp
+    val LibraryFunctionBarIconSize = 18.dp
+    val LibraryItemHeight = 60.dp
+    val LibraryTextPadding = 10.dp
+
+    val SearchTopAppBarPadding = 10.dp
+    val SearchBarHeight = 45.dp
+    val SearchBarTopPadding = 30.dp
 }

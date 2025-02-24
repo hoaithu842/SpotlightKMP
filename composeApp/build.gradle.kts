@@ -36,6 +36,7 @@ kotlin {
             // TODO: Hilt?
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+            implementation(libs.androidx.media3.exoplayer)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -51,12 +52,8 @@ kotlin {
             implementation(libs.navigation.compose) // Navigation
             implementation(libs.kotlinx.serialization.json) // Serializable
 
-            // Coil
-            implementation(libs.koin.core)
-            implementation(libs.coil.compose.core)
-            implementation(libs.coil.compose)
-            implementation(libs.coil.mp)
-            implementation(libs.coil.network.ktor)
+            // Display image
+            implementation("com.github.skydoves:landscapist-coil3:2.4.4")
 
             api(libs.koin.core)
             implementation(libs.koin.compose)

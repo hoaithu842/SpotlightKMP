@@ -1,6 +1,5 @@
 package io.github.hoaithu842.spotlight_kmp
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -38,8 +37,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import coil3.annotation.ExperimentalCoilApi
@@ -48,23 +51,22 @@ import io.github.hoaithu842.spotlight_kmp.manager.NetworkStatus
 import io.github.hoaithu842.spotlight_kmp.navigation.SpotlightNavHost
 import io.github.hoaithu842.spotlight_kmp.navigation.TopLevelDestination
 import io.github.hoaithu842.spotlight_kmp.navigation.navigateToHomeScreen
-import io.github.hoaithu842.spotlight_kmp.navigation.navigateToLibraryScreen
+import io.github.hoaithu842.spotlight_kmp.navigation.navigateToLibrary
 import io.github.hoaithu842.spotlight_kmp.navigation.navigateToPremiumScreen
-import io.github.hoaithu842.spotlight_kmp.navigation.navigateToSearchScreen
-import io.github.hoaithu842.spotlight_kmp.presentation.component.FullsizePlayer
-import io.github.hoaithu842.spotlight_kmp.presentation.component.MinimizedPlayer
-import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.HomeScreenDrawer
-import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.SpotlightDimens
-import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.SpotlightNavigationBar
-import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.SpotlightNavigationBarItem
+import io.github.hoaithu842.spotlight_kmp.navigation.navigateToSearch
+import io.github.hoaithu842.spotlight_kmp.presentation.screen.PlayerView
+import io.github.hoaithu842.spotlight_kmp.ui.designsystem.HomeScreenDrawer
+import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightDimens
+import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightNavigationBar
+import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightNavigationBarItem
 import io.github.hoaithu842.spotlight_kmp.ui.theme.BlurGray
 import io.github.hoaithu842.spotlight_kmp.ui.theme.SpotlightTheme
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
+import kotlin.reflect.KClass
 
 fun navigateToTopLevelDestination(
     navController: NavHostController,
@@ -82,11 +84,11 @@ fun navigateToTopLevelDestination(
             topLevelNavOptions
         )
 
-        TopLevelDestination.SEARCH -> navController.navigateToSearchScreen(
+        TopLevelDestination.SEARCH -> navController.navigateToSearch(
             topLevelNavOptions
         )
 
-        TopLevelDestination.LIBRARY -> navController.navigateToLibraryScreen(
+        TopLevelDestination.LIBRARY -> navController.navigateToLibrary(
             topLevelNavOptions
         )
 
@@ -95,6 +97,11 @@ fun navigateToTopLevelDestination(
         )
     }
 }
+
+private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
+    this?.hierarchy?.any {
+        it.hasRoute(route)
+    } ?: false
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoilApi::class)
 @Composable
@@ -108,7 +115,8 @@ fun App(
         val density = LocalDensity.current
         val scaffoldState = rememberBottomSheetScaffoldState()
         val navController = rememberNavController()
-        var currentDestination by remember { mutableStateOf(TopLevelDestination.HOME) }
+        val currentDestination: NavDestination? =
+            navController.currentBackStackEntryAsState().value?.destination
         val coroutineScope = rememberCoroutineScope()
         val pagerState = rememberPagerState(
             initialPage = 1,
@@ -165,19 +173,18 @@ fun App(
                                 ) {
                                     SpotlightNavigationBar {
                                         TopLevelDestination.entries.forEach { destination ->
+                                            val selected =
+                                                currentDestination.isRouteInHierarchy(destination.route)
                                             SpotlightNavigationBarItem(
                                                 title = stringResource(destination.title),
-                                                selected = currentDestination == destination,
+                                                selected = selected,
                                                 icon = destination.unselectedIcon,
                                                 selectedIcon = destination.selectedIcon,
                                                 onClick = {
-                                                    if (currentDestination != destination) {
-                                                        navigateToTopLevelDestination(
-                                                            navController = navController,
-                                                            topLevelDestination = destination,
-                                                        )
-                                                        currentDestination = destination
-                                                    }
+                                                    navigateToTopLevelDestination(
+                                                        navController = navController,
+                                                        topLevelDestination = destination,
+                                                    )
                                                 },
                                             )
                                         }
@@ -197,41 +204,10 @@ fun App(
                                     sheetDragHandle = {},
                                     sheetShadowElevation = 0.dp,
                                     sheetContent = {
-                                        AnimatedContent(
-                                            targetState = scaffoldState.bottomSheetState.currentValue,
-                                            label = "",
-                                        ) {
-                                            when (it) {
-                                                SheetValue.Hidden -> {}
-                                                SheetValue.Expanded -> {
-                                                    FullsizePlayer(
-                                                        songName = "Merry Go Round of Life (From Howl's Moving Castle Original Motion Picture Soundtrack)",
-                                                        artists = " Grissini Project",
-                                                        onMinimizeClick = {
-                                                            coroutineScope.launch {
-                                                                isNavBarDisplaying = true
-                                                                delay(100)
-                                                                scaffoldState.bottomSheetState.partialExpand()
-                                                            }
-                                                        }
-                                                    )
-                                                }
-
-                                                SheetValue.PartiallyExpanded -> {
-                                                    MinimizedPlayer(
-                                                        isPlaying = true,
-                                                        songName = "Merry Go Round of Life (From Howl's Moving Castle Original Motion Picture Soundtrack)",
-                                                        artists = " Grissini Project",
-                                                        onPlayerClick = {
-                                                            coroutineScope.launch {
-                                                                isNavBarDisplaying = false
-                                                                scaffoldState.bottomSheetState.expand()
-                                                            }
-                                                        }
-                                                    )
-                                                }
-                                            }
-                                        }
+                                        PlayerView(
+                                            scaffoldState = scaffoldState,
+                                            navBarDisplayingChange = { isNavBarDisplaying = it },
+                                        )
                                     },
                                     snackbarHost = { SnackbarHost(snackbarHostState) },
                                     sheetContainerColor = Color.Transparent,

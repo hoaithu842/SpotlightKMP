@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -15,6 +16,9 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.debugInspectorInfo
+import androidx.compose.ui.semantics.Role
+import io.ktor.util.date.getTimeMillis
 
 inline fun Modifier.noRippleClickable(
     crossinline onClick: () -> Unit
@@ -23,6 +27,54 @@ inline fun Modifier.noRippleClickable(
         indication = null,
         interactionSource = remember { MutableInteractionSource() }) {
         onClick()
+    }
+}
+
+fun Modifier.singleClickable(
+    enabled: Boolean = true,
+    onClickLabel: String? = null,
+    role: Role? = null,
+    onClick: () -> Unit
+) = composed(
+    inspectorInfo = debugInspectorInfo {
+        name = "clickable"
+        properties["enabled"] = enabled
+        properties["onClickLabel"] = onClickLabel
+        properties["role"] = role
+        properties["onClick"] = onClick
+    }
+) {
+    val multipleEventsCutter = remember { MultipleEventsCutter.get() }
+    Modifier.clickable(
+        enabled = enabled,
+        onClickLabel = onClickLabel,
+        onClick = { multipleEventsCutter.processEvent { onClick() } },
+        role = role,
+        indication = LocalIndication.current,
+        interactionSource = remember { MutableInteractionSource() }
+    )
+}
+
+internal interface MultipleEventsCutter {
+    fun processEvent(event: () -> Unit)
+
+    companion object
+}
+
+internal fun MultipleEventsCutter.Companion.get(): MultipleEventsCutter =
+    MultipleEventsCutterImpl()
+
+private class MultipleEventsCutterImpl : MultipleEventsCutter {
+    private val now: Long
+        get() = getTimeMillis()
+
+    private var lastEventTimeMs: Long = 0
+
+    override fun processEvent(event: () -> Unit) {
+        if (now - lastEventTimeMs >= 300L) {
+            event.invoke()
+        }
+        lastEventTimeMs = now
     }
 }
 

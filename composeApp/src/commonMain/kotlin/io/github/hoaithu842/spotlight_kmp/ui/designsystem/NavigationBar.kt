@@ -1,4 +1,4 @@
-package io.github.hoaithu842.spotlight_kmp.presentation.designsystem
+package io.github.hoaithu842.spotlight_kmp.ui.designsystem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

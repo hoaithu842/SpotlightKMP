@@ -3,11 +3,7 @@ package io.github.hoaithu842.spotlight_kmp.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import io.github.hoaithu842.spotlight_kmp.navigation.HomeRoute
-import io.github.hoaithu842.spotlight_kmp.navigation.homeScreen
-import io.github.hoaithu842.spotlight_kmp.navigation.libraryScreen
-import io.github.hoaithu842.spotlight_kmp.navigation.premiumScreen
-import io.github.hoaithu842.spotlight_kmp.navigation.searchScreen
+import androidx.navigation.navOptions
 
 @Composable
 fun SpotlightNavHost(
@@ -19,8 +15,28 @@ fun SpotlightNavHost(
         startDestination = HomeRoute,
     ) {
         homeScreen(onAvatarClick = onAvatarClick)
-        searchScreen(onAvatarClick = onAvatarClick)
-        libraryScreen(onAvatarClick = onAvatarClick)
+        searchGraph(
+            onAvatarClick = onAvatarClick,
+            onCancelClick = navHostController::popBackStack,
+            onNavigateToSearchClick = {
+                navHostController.navigateToSearchResultScreen(
+                    navOptions = navOptions {
+                        launchSingleTop = true
+                    }
+                )
+            },
+        )
+        libraryGraph(
+            onAvatarClick = onAvatarClick,
+            onCancelClick = navHostController::popBackStack,
+            onNavigateToSearchClick = {
+                navHostController.navigateToLibrarySearchScreen(
+                    navOptions = navOptions {
+                        launchSingleTop = true
+                    }
+                )
+            },
+        )
         premiumScreen()
     }
 }

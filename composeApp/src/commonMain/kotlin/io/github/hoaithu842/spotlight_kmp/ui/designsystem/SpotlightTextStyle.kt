@@ -1,4 +1,4 @@
-package io.github.hoaithu842.spotlight_kmp.presentation.designsystem
+package io.github.hoaithu842.spotlight_kmp.ui.designsystem
 
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -14,6 +14,10 @@ object SpotlightTextStyle {
         fontSize = 11.sp,
         fontWeight = FontWeight.W600,
     )
+    val Text13W600 = TextStyle(
+        fontSize = 13.sp,
+        fontWeight = FontWeight.W600,
+    )
     val Text14W400 = TextStyle(
         fontSize = 14.sp,
         fontWeight = FontWeight.W400,
@@ -21,6 +25,10 @@ object SpotlightTextStyle {
     val Text16W400 = TextStyle(
         fontSize = 16.sp,
         fontWeight = FontWeight.W400,
+    )
+    val Text16W600 = TextStyle(
+        fontSize = 16.sp,
+        fontWeight = FontWeight.W600,
     )
     val Text18W700 = TextStyle(
         fontSize = 18.sp,

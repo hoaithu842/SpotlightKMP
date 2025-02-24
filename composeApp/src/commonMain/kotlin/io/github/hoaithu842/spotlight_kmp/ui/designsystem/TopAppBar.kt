@@ -1,4 +1,4 @@
-package io.github.hoaithu842.spotlight_kmp.presentation.designsystem
+package io.github.hoaithu842.spotlight_kmp.ui.designsystem
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -15,16 +15,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,12 +41,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.hoaithu842.spotlight_kmp.domain.model.Song
 import io.github.hoaithu842.spotlight_kmp.extension.noRippleClickable
-import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.SpotlightDimens.TopAppBarHorizontalPadding
+import io.github.hoaithu842.spotlight_kmp.extension.singleClickable
+import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightDimens.TopAppBarHorizontalPadding
 import io.github.hoaithu842.spotlight_kmp.ui.theme.MinimizedPlayerBackground
 import io.github.hoaithu842.spotlight_kmp.ui.theme.NavigationGray
 import io.github.hoaithu842.spotlight_kmp.ui.theme.ProgressIndicatorColor
@@ -47,11 +64,13 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import spotlight.composeapp.generated.resources.Res
 import spotlight.composeapp.generated.resources.all
+import spotlight.composeapp.generated.resources.cancel
 import spotlight.composeapp.generated.resources.ic_launcher_background
 import spotlight.composeapp.generated.resources.library
 import spotlight.composeapp.generated.resources.music
 import spotlight.composeapp.generated.resources.podcasts
 import spotlight.composeapp.generated.resources.search
+import spotlight.composeapp.generated.resources.what_do_you_want_to_listen
 
 enum class HomeScreenTab {
     All,
@@ -157,6 +176,7 @@ fun HomeTopAppBarOption(
 @Composable
 fun LibraryTopAppBar(
     onAvatarClick: () -> Unit,
+    onNavigateToSearchClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -195,7 +215,8 @@ fun LibraryTopAppBar(
                     modifier = Modifier
                         .padding(horizontal = TopAppBarHorizontalPadding)
                         .size(SpotlightDimens.HomeScreenDrawerHeaderOptionIconSize)
-                        .padding(1.dp),
+                        .padding(1.dp)
+                        .noRippleClickable { onNavigateToSearchClick() },
                     tint = MaterialTheme.colorScheme.onBackground,
                 )
                 Icon(
@@ -209,6 +230,100 @@ fun LibraryTopAppBar(
         LibraryFiltering(
             modifier = Modifier.padding(horizontal = SpotlightDimens.TopAppBarIconHorizontalPadding * 2)
         )
+    }
+}
+
+@Composable
+fun LibrarySearchTopAppBar(
+    searchQuery: String,
+    onCancelClick: () -> Unit,
+    onSearchQueryChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(
+                bottom = TopAppBarHorizontalPadding * 2,
+                start = SpotlightDimens.TopAppBarIconHorizontalPadding,
+                end = SpotlightDimens.TopAppBarIconHorizontalPadding,
+            )
+    ) {
+        val keyboardController = LocalSoftwareKeyboardController.current
+        val focusManager = LocalFocusManager.current
+        val focusRequester = remember { FocusRequester() }
+
+        LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
+        }
+
+        val onSearchExplicitlyTriggered = {
+            keyboardController?.hide()
+            focusManager.clearFocus()
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(SpotlightDimens.LibraryTextFieldHeight)
+                .padding(end = SpotlightDimens.LibrarySearchButtonWidth)
+                .clip(shape = RoundedCornerShape(size = 6.dp))
+                .background(TopAppBarGray)
+                .align(Alignment.BottomStart),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                modifier = Modifier
+                    .padding(horizontal = SpotlightDimens.TopAppBarIconHorizontalPadding)
+                    .size(SpotlightDimens.LibrarySearchIconSize)
+                    .noRippleClickable { onSearchExplicitlyTriggered() },
+
+                painter = painterResource(SpotlightIcons.Search),
+                tint = NavigationGray,
+                contentDescription = "",
+            )
+
+            BasicTextField(
+                value = searchQuery,
+//                textStyle = WordbookSearchTextStyle.copy(color = MaterialTheme.colorScheme.inverseSurface),
+                onValueChange = {
+                    if ("\n" !in it) onSearchQueryChanged(it)
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(focusRequester),
+                maxLines = 1,
+                singleLine = true,
+                decorationBox = { innerTextField ->
+                    if (searchQuery.isEmpty()) {
+                        Text(
+                            text = stringResource(Res.string.search) + " " + stringResource(Res.string.library),
+                            style = SpotlightTextStyle.Text13W600,
+                            color = NavigationGray,
+                        )
+                    }
+                    innerTextField()
+                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = { onSearchExplicitlyTriggered() }),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+            )
+        }
+        Row(
+            modifier = Modifier
+                .height(SpotlightDimens.LibraryTextFieldHeight)
+                .width(SpotlightDimens.LibrarySearchButtonWidth)
+                .align(Alignment.BottomEnd),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = stringResource(Res.string.cancel),
+                style = SpotlightTextStyle.Text11W600,
+                color = NavigationGray,
+                modifier = Modifier.singleClickable { onCancelClick() }
+            )
+        }
     }
 }
 
@@ -347,37 +462,137 @@ fun LibraryTopAppBarOption(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SearchTopAppBar(
+    scrollBehavior: TopAppBarScrollBehavior,
     onAvatarClick: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(bottom = TopAppBarHorizontalPadding * 2),
-        verticalAlignment = Alignment.Bottom,
-    ) {
-        Row(
-            modifier = Modifier.wrapContentSize(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Image(
-                painter = painterResource(Res.drawable.ic_launcher_background),
-                contentDescription = "",
-                modifier = Modifier
-                    .padding(
-                        start = SpotlightDimens.TopAppBarIconHorizontalPadding * 2,
-                        end = SpotlightDimens.TopAppBarIconHorizontalPadding
-                    )
-                    .size(SpotlightDimens.TopAppBarIconSize)
-                    .clip(shape = CircleShape)
-                    .clickable { onAvatarClick() }
-            )
+    TopAppBar(
+        navigationIcon = {
+            Box(
+                modifier = Modifier.size(SpotlightDimens.TopAppBarHeight)
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.ic_launcher_background),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .padding(
+                            start = SpotlightDimens.SearchTopAppBarPadding + 2.dp,
+                            bottom = TopAppBarHorizontalPadding * 2 + 2.dp,
+                        )
+                        .size(SpotlightDimens.TopAppBarIconSize)
+                        .clip(shape = CircleShape)
+                        .clickable { onAvatarClick() }
+                        .align(Alignment.BottomStart)
+                )
+            }
+
+        },
+        title = {
             Text(
                 text = stringResource(Res.string.search),
                 style = SpotlightTextStyle.Text22W700,
                 color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(top = TopAppBarHorizontalPadding)
+            )
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            scrolledContainerColor = Color.Transparent,
+        ),
+        scrollBehavior = scrollBehavior,
+    )
+}
+
+@Composable
+fun SearchResultTopAppBar(
+    searchQuery: String,
+    onCancelClick: () -> Unit,
+    onSearchQueryChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(
+                bottom = TopAppBarHorizontalPadding * 2,
+                start = SpotlightDimens.TopAppBarIconHorizontalPadding,
+                end = SpotlightDimens.TopAppBarIconHorizontalPadding,
+            )
+    ) {
+        val keyboardController = LocalSoftwareKeyboardController.current
+        val focusManager = LocalFocusManager.current
+        val focusRequester = remember { FocusRequester() }
+
+        LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
+        }
+
+        val onSearchExplicitlyTriggered = {
+            keyboardController?.hide()
+            focusManager.clearFocus()
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(SpotlightDimens.LibraryTextFieldHeight)
+                .padding(end = SpotlightDimens.LibrarySearchButtonWidth)
+                .clip(shape = RoundedCornerShape(size = 6.dp))
+                .background(TopAppBarGray)
+                .align(Alignment.BottomStart),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                modifier = Modifier
+                    .padding(horizontal = SpotlightDimens.TopAppBarIconHorizontalPadding)
+                    .size(SpotlightDimens.LibrarySearchIconSize)
+                    .noRippleClickable { onSearchExplicitlyTriggered() },
+
+                painter = painterResource(SpotlightIcons.Search),
+                tint = NavigationGray,
+                contentDescription = "",
+            )
+
+            BasicTextField(
+                value = searchQuery,
+//                textStyle = WordbookSearchTextStyle.copy(color = MaterialTheme.colorScheme.inverseSurface),
+                onValueChange = {
+                    if ("\n" !in it) onSearchQueryChanged(it)
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(focusRequester),
+                maxLines = 1,
+                singleLine = true,
+                decorationBox = { innerTextField ->
+                    if (searchQuery.isEmpty()) {
+                        Text(
+                            text = stringResource(Res.string.what_do_you_want_to_listen),
+                            style = SpotlightTextStyle.Text13W600,
+                            color = NavigationGray,
+                        )
+                    }
+                    innerTextField()
+                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = { onSearchExplicitlyTriggered() }),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+            )
+        }
+        Row(
+            modifier = Modifier
+                .height(SpotlightDimens.LibraryTextFieldHeight)
+                .width(SpotlightDimens.LibrarySearchButtonWidth)
+                .align(Alignment.BottomEnd),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = stringResource(Res.string.cancel),
+                style = SpotlightTextStyle.Text11W600,
+                color = NavigationGray,
+                modifier = Modifier.singleClickable { onCancelClick() }
             )
         }
     }

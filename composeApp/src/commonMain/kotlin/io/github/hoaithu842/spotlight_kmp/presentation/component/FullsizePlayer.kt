@@ -3,13 +3,14 @@ package io.github.hoaithu842.spotlight_kmp.presentation.component
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,27 +36,34 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.coil3.CoilImage
 import io.github.hoaithu842.spotlight_kmp.domain.model.Song
 import io.github.hoaithu842.spotlight_kmp.extension.noRippleClickable
-import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.FullsizePlayerTopAppBar
-import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.PlayerControllerTopAppBar
-import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.SpotlightDimens
-import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.SpotlightIcons
-import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.SpotlightTextStyle
+import io.github.hoaithu842.spotlight_kmp.extension.shimmerLoadingAnimation
+import io.github.hoaithu842.spotlight_kmp.extension.toTimeFormat
+import io.github.hoaithu842.spotlight_kmp.ui.designsystem.FullsizePlayerTopAppBar
+import io.github.hoaithu842.spotlight_kmp.ui.designsystem.PlayerControllerTopAppBar
+import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightDimens
+import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightIcons
+import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightTextStyle
 import io.github.hoaithu842.spotlight_kmp.ui.theme.MinimizedPlayerBackground
 import io.github.hoaithu842.spotlight_kmp.ui.theme.NavigationGray
 import io.github.hoaithu842.spotlight_kmp.ui.theme.ProgressIndicatorColor
 import io.github.hoaithu842.spotlight_kmp.ui.theme.ProgressIndicatorTrackColor
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
-import spotlight.composeapp.generated.resources.Res
-import spotlight.composeapp.generated.resources.ic_launcher_background
 
 @Composable
 fun FullsizePlayer(
-    songName: String,
-    artists: String,
+    isPlaying: Boolean,
+    song: Song,
+    currentPosition: Float,
+    duration: Float,
     onMinimizeClick: () -> Unit,
+    onPrevClick: () -> Unit,
+    onMainFunctionClick: () -> Unit,
+    onNextClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val lazyListState = rememberLazyListState()
@@ -86,8 +94,13 @@ fun FullsizePlayer(
             }
             item {
                 MainPlayerContent(
-                    songName = songName,
-                    artists = artists,
+                    isPlaying = isPlaying,
+                    song = song,
+                    currentPosition = currentPosition,
+                    duration = duration,
+                    onPrevClick = onPrevClick,
+                    onMainFunctionClick = onMainFunctionClick,
+                    onNextClick = onNextClick,
                 )
             }
 
@@ -151,8 +164,13 @@ fun FullsizePlayer(
 
 @Composable
 fun MainPlayerContent(
-    songName: String,
-    artists: String,
+    isPlaying: Boolean,
+    song: Song,
+    currentPosition: Float,
+    duration: Float,
+    onPrevClick: () -> Unit,
+    onMainFunctionClick: () -> Unit,
+    onNextClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -162,14 +180,33 @@ fun MainPlayerContent(
             .wrapContentHeight(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Image(
-            painter = painterResource(Res.drawable.ic_launcher_background),
-            contentDescription = "",
+        CoilImage(
+            imageModel = { song.image },
+            imageOptions = ImageOptions(
+                contentScale = ContentScale.Fit,
+                alignment = Alignment.Center
+            ),
+            loading = {
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .shimmerLoadingAnimation(
+                            isLoadingCompleted = false,
+                            isLightModeActive = !isSystemInDarkTheme(),
+                        )
+                )
+            },
+            failure = {
+                Box(
+                    modifier = modifier.fillMaxSize()
+                ) {
+                }
+            },
             modifier = Modifier
                 .padding(vertical = SpotlightDimens.FullsizePlayerMainContentPadding)
-                .size(SpotlightDimens.FullsizePlayerThumbnailSize),
-            contentScale = ContentScale.Crop, // TODO: replace later
+                .size(SpotlightDimens.FullsizePlayerThumbnailSize)
         )
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -181,7 +218,7 @@ fun MainPlayerContent(
                     .padding(end = SpotlightDimens.HomeScreenDrawerHeaderOptionIconSize.times(2))
             ) {
                 Text(
-                    text = songName,
+                    text = song.title,
                     style = SpotlightTextStyle.Text22W400,
                     color = MaterialTheme.colorScheme.onBackground,
                     maxLines = 1,
@@ -190,7 +227,7 @@ fun MainPlayerContent(
                         .basicMarquee()
                 )
                 Text(
-                    text = artists,
+                    text = song.artists,
                     style = SpotlightTextStyle.Text16W400,
                     overflow = TextOverflow.Ellipsis,
                     color = NavigationGray,
@@ -211,7 +248,7 @@ fun MainPlayerContent(
         }
 
         LinearProgressIndicator(
-            progress = { 0.2f },
+            progress = { if (duration.toInt() == 0) 0f else (currentPosition * 1.0 / duration).toFloat() },
             modifier = Modifier
                 .padding(top = 15.dp)
                 .fillMaxWidth(),
@@ -228,19 +265,23 @@ fun MainPlayerContent(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                text = "0:00",
+                text = currentPosition.toTimeFormat(),
                 style = SpotlightTextStyle.Text11W400,
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = "-1:18",
+                text = duration.toTimeFormat(),
                 style = SpotlightTextStyle.Text11W400,
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onBackground,
             )
         }
         PlayerController(
+            isPlaying = isPlaying,
+            onPrevClick = onPrevClick,
+            onMainFunctionClick = onMainFunctionClick,
+            onNextClick = onNextClick,
             modifier = Modifier.padding(vertical = 14.dp)
         )
     }
@@ -248,6 +289,10 @@ fun MainPlayerContent(
 
 @Composable
 fun PlayerController(
+    isPlaying: Boolean,
+    onPrevClick: () -> Unit,
+    onMainFunctionClick: () -> Unit,
+    onNextClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -271,10 +316,10 @@ fun PlayerController(
             tint = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .size(SpotlightDimens.PlayerControllerMediumIconSize)
-                .noRippleClickable { },
+                .noRippleClickable { onPrevClick() },
         )
         Icon(
-            painter = painterResource(SpotlightIcons.Pause),
+            painter = painterResource(if (isPlaying) SpotlightIcons.Pause else SpotlightIcons.Play),
             contentDescription = "",
             tint = MinimizedPlayerBackground,
             modifier = Modifier
@@ -282,7 +327,9 @@ fun PlayerController(
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.onBackground)
                 .padding((SpotlightDimens.PlayerControllerLargeIconSize - SpotlightDimens.PlayerControllerMediumIconSize) / 2)
-                .noRippleClickable { },
+                .noRippleClickable {
+                    onMainFunctionClick()
+                },
         )
         Icon(
             painter = painterResource(SpotlightIcons.PlayNext),
@@ -290,7 +337,7 @@ fun PlayerController(
             tint = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .size(SpotlightDimens.PlayerControllerMediumIconSize)
-                .noRippleClickable { },
+                .noRippleClickable { onNextClick() },
         )
         Icon(
             painter = painterResource(SpotlightIcons.Timer),

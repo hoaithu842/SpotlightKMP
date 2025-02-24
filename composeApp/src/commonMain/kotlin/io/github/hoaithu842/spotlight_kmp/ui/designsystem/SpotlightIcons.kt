@@ -1,4 +1,4 @@
-package io.github.hoaithu842.spotlight_kmp.presentation.designsystem
+package io.github.hoaithu842.spotlight_kmp.ui.designsystem
 
 import spotlight.composeapp.generated.resources.Res
 import spotlight.composeapp.generated.resources.add

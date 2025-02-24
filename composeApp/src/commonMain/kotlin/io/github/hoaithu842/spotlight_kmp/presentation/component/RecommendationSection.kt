@@ -15,8 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.SpotlightDimens
-import io.github.hoaithu842.spotlight_kmp.presentation.designsystem.SpotlightTextStyle
+import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightDimens
+import io.github.hoaithu842.spotlight_kmp.ui.designsystem.SpotlightTextStyle
 import io.github.hoaithu842.spotlight_kmp.ui.theme.NavigationGray
 
 @Composable
